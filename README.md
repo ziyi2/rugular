@@ -66,14 +66,14 @@ for(i=0; i<3; i++) {
  * multiline：布尔值，表示是否设置了m标志
  * source：正则表达式的字符串表示
  */
- 
+
 var pattern = /\[fc\]at/i;
 
-console.log(pattern.global);        //false 
-console.log(pattern.ignoreCase);    //true  
-console.log(pattern.multiline);     //false 
-console.log(pattern.lastIndex);     //0 
-console.log(pattern.source);        //\[fc\]at 
+console.log(pattern.global);        //false
+console.log(pattern.ignoreCase);    //true
+console.log(pattern.multiline);     //false
+console.log(pattern.lastIndex);     //0
+console.log(pattern.source);        //\[fc\]at
 
 pattern = new RegExp("\\[fc\\]at","i");
 
@@ -91,7 +91,7 @@ console.log(pattern.source);        //\[fc\]at 需要注意source属性保存的
 该方法专门为**捕获组**设计.
 
 
-```
+``` javascript
 /* 这个例子包含了两个捕获组 */
 
 /**
@@ -118,10 +118,34 @@ matches = pattern.exec('123');
 console.log(matches);                   //null 匹配失败
 ```
 
-设置全局标志
+全局标志的作用
 
+``` javascript
+var string = "cat,bat,sat,fat";
+var pattern = /.at/;
 
+for(var i=0; i<4; i++) {
+    console.log(pattern.exec(string));
+    console.log(pattern.lastIndex);
+    //["cat", index: 0, input: "cat,bat,sat,fat"]
+    //["cat", index: 0, input: "cat,bat,sat,fat"]
+    //["cat", index: 0, input: "cat,bat,sat,fat"]
+    //["cat", index: 0, input: "cat,bat,sat,fat"]
+    //lastIndex 0 0 0 0
+}
 
+pattern = /.at/g;
+for(var i=0; i<4; i++) {
+    console.log(pattern.exec(string));
+    console.log(pattern.lastIndex);
+    //["cat", index: 0, input: "cat,bat,sat,fat"]
+    //["bat", index: 4, input: "cat,bat,sat,fat"]
+    //["sat", index: 8, input: "cat,bat,sat,fat"]
+    //["sat", index: 8, input: "cat,bat,sat,fat"]
+    //lastIndex 3 7 11 15
+}
+```
+>提示： 如果不是全局模式，`exec()`返回的都是第一个匹配项，而如果是全局模式，每次调用`exec()`都会返回字符串的下一个匹配项直至匹配结束。
 
 
 
@@ -144,6 +168,7 @@ console.log(matches);                   //null 匹配失败
 
 - 起始字符 `^`
 - 结束字符 `$`
+
 
 
 
