@@ -14,13 +14,13 @@
 ##### 1.1.1.1 字面量法
 
 ``` javascript
-var expression = / pattern / flags ; //flags = g||i||m
+var expression = / pattern / flags ; 	   //flags = g||i||m
 ```
 
->例
+>解析
 
 ``` javascript
- var pattern = /\[fc\]at/i;  //注意\[匹配[,这里总体匹配[fc]at
+ var pattern = /\[fc\]at/i;                //注意\[匹配[,这里的\是转义字符,总体匹配[fc]at
 ```
 
 ##### 1.1.1.2 构造函数法
@@ -29,7 +29,7 @@ var expression = / pattern / flags ; //flags = g||i||m
 var expression = new RegExp(pattern,flags);
 ```
 
->例
+>解析
 
 ``` javascript
 var pattern = new RegExp("\\[fc\\]at","i");  //这里需要对[进行双转义
@@ -38,25 +38,26 @@ var pattern = new RegExp("\\[fc\\]at","i");  //这里需要对[进行双转义
 
 在**ES3**中使用字面量法每次都是调用同一个`RegExp`实例对象，而**ES5**中规定即使使用的是字面量法，也必须像直接调用`RegExp`构造函数一样，每次都创建新的`RegExp`实例。
 
->例
+>解析
 
 ``` javascript
 var pattern = null,
-        i ;
+    i ;
 
 for(i=0; i<3; i++) {
-    pattern = /cat/g;  //字面量法,在ES5中类似于构造函数法
+    pattern = /cat/g;                          //字面量法,在ES5中类似于构造函数法
     console.log(pattern.test('catfdaslkfj'));  //true true true
 }
 
 for(i=0; i<3; i++) {
-    pattern = new RegExp("cat","g"); //构造函数法
-    console.log(pattern.test('catfdaslkfj'));
+    pattern = new RegExp("cat","g");           //构造函数法
+    console.log(pattern.test('catfdaslkfj'));  //true true true
 }
 ```
 
 #### 1.1.2 `RegExp`实例对象的属性
 
+>解析
 ``` javascript
 
 /**
@@ -87,9 +88,9 @@ console.log(pattern.source);        //\[fc\]at 需要注意source属性保存的
 #### 1.1.3 `RegExp`实例对象的方法
 
 ##### 1.1.1.3  `pattern.exec(string)`
+- 该方法专门为**捕获组**设计.
 
-该方法专门为**捕获组**设计.
-
+>解析
 
 ``` javascript
 /* 这个例子包含了两个捕获组 */
@@ -147,17 +148,158 @@ for(var i=0; i<4; i++) {
 ```
 >提示： 如果不是全局模式，`exec()`返回的都是第一个匹配项，而如果是全局模式，每次调用`exec()`都会返回字符串的下一个匹配项直至匹配结束。
 
+##### 1.1.1.4  `pattern.test(string)`
+- 该方法在只想对目标字符串进行模式匹配时非常方便(不需要知道目标字符串的文本内容).
+
+``` javascript
+var text = "000-00-0000";
+var pattern = /\d{3}-\d{2}-\d{4}/;
+
+if(pattern.test(text)){ //true
+    document.write("The pattern was matched." + "<br/>");
+}
+```
 
 
-### 2.3 `String`类型
+#### 1.1.4 `RegExp`构造函数的属性
 
+``` javascript
+var text = "this has been a short summer";
+var pattern = /(.)hort/g;                           //匹配任何字符后面跟hort，而且把第一个字符放在了一个捕获组中
 
+if(pattern.test(text)){
+	/* 最近一次要匹配的字符串 */
+    document.write(RegExp.input + "<br/>");         //this has been a short summer
+    /* 最近一次的匹配项 */
+    document.write(RegExp.lastMatch + "<br/>");     //short
+    /* lastMatch之后的文本 */
+    document.write(RegExp.rightContext + "<br/>");  //summer
+    /* lastMatch之前的文本 */
+    document.write(RegExp.leftContext + "<br/>");   //this has been a
+    /* 最近一次匹配的捕获组 */
+    document.write(RegExp.lastParen + "<br/>");     //s
+    /* 表示是否所有表达式都使用了多行模式 */
+    document.write(RegExp.multiline + "<br/>");     //undefined(chrome)
+}
+```
 
+简写形式
 
+``` javascript
+var text = "this has been a short summer";
+var pattern = /(.)hort/g;                           //匹配任何字符后面跟hort，而且把第一个字符放在了一个捕获组中
+document.write(RegExp.$_ + "<br/>");            //this has been a short summer
+document.write(RegExp["$'"] + "<br/>");         //summer
+document.write(RegExp["$`"] + "<br/>");         //this has been a
+document.write(RegExp["$&"] + "<br/>");         //short
+document.write(RegExp["$+"] + "<br/>");         //s
+document.write(RegExp["$*"] + "<br/>");         //undefined(chrome)
 
+var pattern = /(..)or(.)/g;
+var text = "this has been a short summer";
 
+if(pattern.test(text)) {
+    document.write(RegExp.$1 + "<br/>");    //sh    $1捕获组1
+    document.write(RegExp.$2 + "<br/>");    //t     $2捕获组2 一直到捕获组9
+}
+```
 
+### 1.2 `String`类型
 
+##### 1.2.1 `string.match(pattern)`
+
+- 和`pattern.exec(string)`功能类似
+
+``` javascript
+var text = "cat, bat, sat, fat";
+var pattern = /.at/;
+var matches = text.match(pattern);
+console.log(matches);   //["cat", index: 0, input: "cat, bat, sat, fat"]
+```
+
+##### 1.2.2 `string.search(pattern)`
+- **始终是字符串开头向后索引**，返回字符串中第一个匹配项的索引,没有找到匹配项则返回`-1`
+
+``` javascript
+var text = "hello cat";
+var pattern = /at/;
+var pos = text.search(pattern);
+console.log(pos);     //7
+pos = text.search(pattern);
+console.log(pos);     //7
+
+text = "cat bat";
+pattern = /at/g;
+pos = text.search(pattern);
+console.log(pos);     //1
+pos = text.search(pattern);
+console.log(pos);     //1
+```
+
+##### 1.2.3 `string.replace(pattern/string,string)`
+
+- 第一参数是要被替换的字符串或者匹配模式
+- 第二个参数是要替换的字符串
+
+``` javascript
+var text = "cat,bat,sat,fat";
+var pattern = /at/g;
+var result = text.replace("at","ond");  //如果只是字符串，则是替换第一个子字符串
+console.log(result); //cond,bat,sat,fat
+
+result = text.replace(pattern,"ond");   //指定全局g标志
+console.log(result); //cond,bond,sond,fond
+
+pattern = /at/;
+result = text.replace(pattern,"ond");   //正则不指定全局g标志
+console.log(result); //cond,bat,sat,fat
+```
+如果第二个参数(要替换的字符串)是字符串(不是函数),还可以使用一些特殊的字符序列,将正则表达式操作得到的值插入到结果字符串中
+
+``` javascript
+var text = "cat,bat,sat,fat";
+var pattern = /at/g;
+var result = text.replace(/(.at)/g,"hello ($1)");  //$1是最近一次匹配结果中第一个捕获组的子字符串
+console.log(result);                               //hello (cat),hello (bat),hello (sat),hello (fat)
+```
+
+如果第二个参数是函数
+
+``` javascript
+//函数本身接收三个参数：1.模式的匹配项 2.模式匹配项在字符串中的位置 3.原始字符串
+function htmlReplace(text,pattern){
+    return text.replace(pattern,function(match,pos,originalText){
+        switch(match){
+            case "<":
+                return "&lt;";
+            case ">":
+                return "&gt;";
+            case "&":
+                return "&amp;";
+            case "\"":
+                return "&quot;";
+        }
+    });
+}
+
+var pattern = /[<>"&]/g;
+console.log(htmlReplace("<p class=\"greeting\">hello world!</p>",pattern));
+//&lt;p class=&quot;greeting&quot;&gt;hello world!&lt;/p&gt;
+```
+
+##### 1.2.4 `string.split(pattern/string, number)`
+- 参数一 可以是字符串，也可以是RegExp对象（这个方法不会将字符串看成是一个正则表达式，不推荐使用）
+- 第二个参数用于指定分割的数组的大小
+
+``` javascript
+var colorText = "red,blue,green,yellow";
+var colors1 = colorText.split(",");
+console.log(colors1); //["red", "blue", "green", "yellow"]
+var colors2 = colorText.split(",",2);
+console.log(colors2); //["red","blue"]
+var colors3 = colorText.split(/blue/);
+console.log(colors3); //["red,", ",green,yellow"]
+```
 
 
 ## 2. 元字符
@@ -168,6 +310,9 @@ for(var i=0; i<4; i++) {
 
 - 起始字符 `^`
 - 结束字符 `$`
+
+
+
 
 
 
