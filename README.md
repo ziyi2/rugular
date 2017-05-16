@@ -301,21 +301,73 @@ var colors3 = colorText.split(/blue/);
 console.log(colors3); //["red,", ",green,yellow"]
 ```
 
+## 2. 正则表达式入门
 
-## 2. 元字符
+完整的正则表达式由小的**构建模块单元**组成，每个单独的构建模块都很简单，但是它们有无穷多种方式组合，将它们结合起来实现特殊目标必须依靠经验。
+
+
+
+## 2. 1 元字符
 
 完整的正则表达式由两种字符构成，特殊字符和普通文本字符. 其中特殊字符称为**元字符**。
 
-### 2. 1 行的起始和结束
+### 2.1.1 行的起始和结束
 
-- 起始字符 `^`
-- 结束字符 `$`
+- 起始字符 `^`： 锚定一行的开头
+- 结束字符 `$`： 锚定一行的结尾
+- 两者的特别之处在于它们匹配的是位置，而不是具体的文本
+
+`/cat/`寻找的是一行文本中任意位置的`"cat"`
+
+``` javascript
+var pattern = /cat/,
+    text = "bcat fat sat",
+    matches = pattern.exec(text);
+
+console.log(matches);  //[0:"cat" index:0 input:"cat fat sat",length:1]
+```
+`/^cat/`寻找的是以`c`作为一行的第一个字符，紧接着是一个`a`，紧接着是一个`t`的文本（注意不要理解为以`cat`开头的行）
+``` javascript
+var pattern = /^cat/,
+    text = "bcat fat sat",
+    matches = pattern.exec(text);
+
+console.log(matches);  //null
+
+text = "cat fat sat";
+matches = pattern.exec(text);
+console.log(matches);  //[0:"cat" index:0 input:"cat fat sat",length:1]
+
+pattern = /at$/;
+matches = pattern.exec(text);
+console.log(matches);  //[0:"at" index:9 input:"cat fat sat",length:1]
+```
+
+>提问：如何理解`/^cat$/`、`/^$/`、`/^/`呢?
+
+
+``` javascript
+var pattern = /^cat$/,
+    text = "bcat fat sat",
+    matches = pattern.exec(text);
+
+console.log(matches);  //null
+
+pattern = /^$/;
+matches = pattern.exec(text);
+console.log(matches);  //null
+
+pattern = /^/;
+matches = pattern.exec(text);
+console.log(matches);  //[0:"" index:0 input:"cat fat sat",length:1]
+```
+
+
+ `/^cat$/`匹配的是**行开头**，紧接着的字母`c`、`a`、`t`，最后是**行末尾**。`/^$/`匹配**行开头**，接着是**行末尾**，需要注意如果有空字符那肯定也是不匹配的，只是匹配了空行。`/^/`没有任何意义，因为每一行必定会有**行开头**，所以每一行都能匹配。
 
 
 
-
-
-
+### 2.1.2 字符组
 
 
 
