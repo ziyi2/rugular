@@ -324,7 +324,7 @@ var pattern = /cat/,
     text = "bcat fat sat",
     matches = pattern.exec(text);
 
-console.log(matches);  //[0:"cat" index:1 input:"bcat fat sat",length:1]
+console.log(matches);  //[0:"cat" index:1 input:"bcat fat sat" length:1]
 ```
 `/^cat/`寻找的是以`c`作为一行的第一个字符,紧接着是一个`a`,紧接着是一个`t`的文本（注意不要理解为以`cat`开头的行）
 ``` javascript
@@ -336,11 +336,11 @@ console.log(matches);  //null
 
 text = "cat fat sat";
 matches = pattern.exec(text);
-console.log(matches);  //[0:"cat" index:0 input:"cat fat sat",length:1]
+console.log(matches);  //[0:"cat" index:0 input:"cat fat sat" length:1]
 
 pattern = /at$/;
 matches = pattern.exec(text);
-console.log(matches);  //[0:"at" index:9 input:"cat fat sat",length:1]
+console.log(matches);  //[0:"at" index:9 input:"cat fat sat" length:1]
 ```
 
 >提问:如何理解`/^cat$/`、`/^$/`、`/^/`呢? 
@@ -359,7 +359,7 @@ console.log(matches);  //null
 
 pattern = /^/;
 matches = pattern.exec(text);
-console.log(matches);  //[0:"" index:0 input:"cat fat sat",length:1]
+console.log(matches);  //[0:"" index:0 input:"cat fat sat" length:1]
 ```
 
 
@@ -371,7 +371,7 @@ console.log(matches);  //[0:"" index:0 input:"cat fat sat",length:1]
 
 #### 2.1.2.1 连字符
 
-- **字符组**`[]`: 同一个位置能够匹配若干字符,意思是**“或”**.
+- **字符组**`[]`: 同一个位置能够匹配若干字符,意思是**“或”**,需要注意的是多选结构只匹配一个字符.
 - **字符组元字符**`-`（**连字符**）:表示一个范围
 - 只有在字符组**内部**连字符才可能是元字符,否则只能匹配普通的连字符号（`-`）,需要注意的是在字符组内部,如果连字符号出现在字符组的开头,它表示的仍然只是一个普通的字符,而不是一个范围,同样的原理,`?`和`.`通常被当做元字符,但是在字符组中则不是.
 
@@ -382,13 +382,13 @@ var pattern = /[cfs]at/g,
     text = "bcat fat sat",
     matches = pattern.exec(text);
 
-console.log(matches);  //[0:"cat" index:1 input:"bcat fat sat",length:1]
+console.log(matches);  //[0:"cat" index:1 input:"bcat fat sat" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"fat" index:5 input:"bcat fat sat",length:1]
+console.log(matches);  //[0:"fat" index:5 input:"bcat fat sat" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"sat" index:9 input:"bcat fat sat",length:1]
+console.log(matches);  //[0:"sat" index:9 input:"bcat fat sat" length:1]
 ```
 
 > 提示: 如果不是全局模式,`pattern.exec()`返回的都是第一个匹配项,而如果是全局模式,每次调用`pattern.exec()`都会返回字符串的下一个匹配项直至匹配结束.
@@ -399,13 +399,13 @@ var pattern = /[0-9]/g,
     text = "a1236h",
     matches = pattern.exec(text);
 
-console.log(matches);  //[0:"1" index:1 input:"a1236h",length:1]
+console.log(matches);  //[0:"1" index:1 input:"a1236h" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"2" index:2 input:"a1236h",length:1]
+console.log(matches);  //[0:"2" index:2 input:"a1236h" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"3" index:3 input:"a1236h",length:1]
+console.log(matches);  //[0:"3" index:3 input:"a1236h" length:1]
 ```
 
 >提问: 如何理解`/[0-9A-Z_!.?]/`?
@@ -415,22 +415,22 @@ var pattern = /[0-9A-Z_!.?]/g,
     text = "aA1_!.?",
     matches = pattern.exec(text);
 
-console.log(matches);  //[0:"A" index:1 input:"aA1_!.?",length:1]
+console.log(matches);  //[0:"A" index:1 input:"aA1_!.?" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"1" index:2 input:"aA1_!.?",length:1]
+console.log(matches);  //[0:"1" index:2 input:"aA1_!.?" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"_" index:3 input:"aA1_!.?",length:1]
+console.log(matches);  //[0:"_" index:3 input:"aA1_!.?" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"!" index:4 input:"aA1_!.?",length:1]
+console.log(matches);  //[0:"!" index:4 input:"aA1_!.?" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"." index:5 input:"aA1_!.?",length:1]
+console.log(matches);  //[0:"." index:5 input:"aA1_!.?" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"?" index:6 input:"aA1_!.?",length:1]
+console.log(matches);  //[0:"?" index:6 input:"aA1_!.?" length:1]
 ```
 
 `/[0-9A-Z_!.?]/`中真正是特殊字符元字符的只有`0-9A-Z`中的两个连字符,而`!`、`.`、`?`都只是普通字符.
@@ -450,7 +450,7 @@ var pattern = /[^0-9A-Z_!.?]/g,
     text = "aA1_!.?",
     matches = pattern.exec(text);
 
-console.log(matches);  //[0:"a" index:0 input:"aA1_!.?",length:1]
+console.log(matches);  //[0:"a" index:0 input:"aA1_!.?" length:1]
 
 matches = pattern.exec(text);
 console.log(matches);  //null
@@ -462,17 +462,17 @@ var pattern = /c[^a]/g,
     text = "cat bat cup c",
     matches = pattern.exec(text);
 
-console.log(matches);  //[0:"cu" index:8 input:"cat bat cup c",length:1]
+console.log(matches);  //[0:"cu" index:8 input:"cat bat cup c" length:1]
 
 matches = pattern.exec(text);
 console.log(matches);   //null 注意最后的c是不匹配的,因为c后面没有字符,这里c后面需要匹配一个非a的字符
 
 text = "cat bat cup c ";
 matches = pattern.exec(text);
-console.log(matches);  //[0:"cu" index:8 input:"cat bat cup c",length:1]
+console.log(matches);  //[0:"cu" index:8 input:"cat bat cup c" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"c " index:12 input:"cat bat cup c",length:1] 注意匹配的字符串c后面有空格
+console.log(matches);  //[0:"c " index:12 input:"cat bat cup c" length:1] 注意匹配的字符串c后面有空格
 ```
 
 >提示: 一个字符组,即使是排除型字符组,也需要匹配一个字符.
@@ -490,13 +490,13 @@ var pattern = /11[_./]22[_./]33/g,
     text = "11.22.33 11_22_33 11/22/33";
 
 var matches = pattern.exec(text);
-console.log(matches);  //[0:"11.22.33" index:0 input:"11.22.33 11_22_33 11/22/33",length:1]
+console.log(matches);  //[0:"11.22.33" index:0 input:"11.22.33 11_22_33 11/22/33" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"11_22_33" index:9 input:"11.22.33 11_22_33 11/22/33",length:1]
+console.log(matches);  //[0:"11_22_33" index:9 input:"11.22.33 11_22_33 11/22/33" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"11/22/33" index:18 input:"11.22.33 11_22_33 11/22/33",length:1]
+console.log(matches);  //[0:"11/22/33" index:18 input:"11.22.33 11_22_33 11/22/33" length:1]
 ```
 
 如果只是模糊匹配,以上匹配方式也可以更改为`/11.22.33/g`(相对以上正则这个匹配的范围更广),其中的`.`表示可以匹配任意字符.
@@ -506,13 +506,13 @@ var pattern = /11.22.33/g,
     text = "11.22.33 11_22_33 11/22/33";
 
 var matches = pattern.exec(text);
-console.log(matches);  //[0:"11.22.33" index:0 input:"11.22.33 11_22_33 11/22/33",length:1]
+console.log(matches);  //[0:"11.22.33" index:0 input:"11.22.33 11_22_33 11/22/33" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"11_22_33" index:9 input:"11.22.33 11_22_33 11/22/33",length:1]
+console.log(matches);  //[0:"11_22_33" index:9 input:"11.22.33 11_22_33 11/22/33" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);  //[0:"11/22/33" index:18 input:"11.22.33 11_22_33 11/22/33",length:1]
+console.log(matches);  //[0:"11/22/33" index:18 input:"11.22.33 11_22_33 11/22/33" length:1]
 ```
 
 >注意: 在`/11[_./]22[_./]33/g`中的点号`.`并不是元字符,因为在字符组内部(注意在字符组内外字符的定义和意义是不一样的),这里的连字符`_`同样也不是元字符(因为它出现在了字符组`[`或`[^`的开头,详见`2.1.2.1`).但是不在字符组内部的`/11.22.33/g`的点号`.`则表示元字符,可以匹配任意字符.
@@ -521,3 +521,68 @@ console.log(matches);  //[0:"11/22/33" index:18 input:"11.22.33 11_22_33 11/22/3
 >由于不是出现在字符组的开头,所以是元字符,但是在这里是错误的用法,因为这里无法明确表示范围.
 
 ### 2.1.3 多选结构
+- 元字符`|`: 当我们把不同的子表达式组合成一个总表达式,它能够匹配任意的子表达式.例如`/apple|banana/`中有两个子表达式`apple`和`banana`,`/apple|banana/`可以匹配这两个子表达式中任意的一个子表达式,在这样的组合中,子表达式称为"**多选分支**".
+
+
+`/1|2|3/g`可以以全局的方式匹配一个字符,这个字符是`1`或`2`或`3`.
+
+``` javascript
+var pattern = /1|2|3/g,
+    text = "135";
+
+var matches = pattern.exec(text);
+console.log(matches);  //[0:"1" index:1 input:"135" length:1]
+
+matches = pattern.exec(text);
+console.log(matches);  //[0:"3" index:3 input:"135" length:1]
+```
+
+可以用括号`()`来划定多选结构范围(`()`也是元字符),例如需要匹配`123`或者`125`时,可以使用`/12(3|5)/`来匹配.
+
+``` javascript
+var pattern = /12(3|5)/g,
+    text = "123 124 125";
+
+var matches = pattern.exec(text);
+console.log(matches);  //[0:"123" index:0 input:"123 124 125" length:1]
+
+matches = pattern.exec(text);
+console.log(matches);  //[0:"125" index:8 input:"123 124 125" length:1]
+```
+
+需要注意的是多选结构很容易和字符组产生混淆,例如`/12(3|5)/`和`/12[35]/`的功能都一样.
+
+``` javascript
+var pattern = /12[35]/g,
+    text = "123 124 125";
+
+var matches = pattern.exec(text);
+console.log(matches);  //[0:"123" index:0 input:"123 124 125" length:1]
+
+matches = pattern.exec(text);
+console.log(matches);  //[0:"125" index:8 input:"123 124 125" length:1]
+```
+
+但是如果我们要匹配`1234、1245、1256`时,使用多选结构可以使用表达式`/12(34|45|55)/`，而使用字符组都需要使用表达式`/12[3-5][4-6]/`. 
+
+``` javascript
+var pattern = /12(34|45|56)/g,
+    text = "11231234";
+
+var matches = pattern.exec(text);
+console.log(matches);  //[0:"1234" 1:"34" index:4  input:"11231234" length:2]
+
+
+pattern = /12[3-5][4-6]/g,
+matches = pattern.exec(text);
+console.log(matches);  //[0:"1234" index:4 input:"11231234" length:1]
+```
+>提示: 一个字符组只能匹配目标文本中的单个字符,而每个多选结构都可能是完整的正则表达式,可以匹配任意长度的文本. 字符组可以算是独立的一门微型语言(例如在字符组中对于元字符有不同的规定,和字符组外的正则表达式有区别),而多选结构是正则表达式语言主体的一部分.
+
+>提问: `/^apple|banana|orange:/`和`/^(apple|banana|orange):/`的区别?
+>前者匹配`^apple`、`banana`、`orange:`，后者先匹配一行的起始符号`^`，接着匹配`apple`或`banana`或`orange`，最后匹配`:`.
+
+
+
+
+
