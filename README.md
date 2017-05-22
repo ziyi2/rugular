@@ -583,6 +583,55 @@ console.log(matches);  //[0:"1234" index:4 input:"11231234" length:1]
 >前者匹配`^apple`、`banana`、`orange:`，后者先匹配一行的起始符号`^`，接着匹配`apple`或`banana`或`orange`，最后匹配`:`.
 
 
+### 2.1.5 单词分界符
+
+- `\b`: 匹配一个单词的边界,位于字符`\w`和`\W`之间的位置,或位于字符`\w`和字符串的开头或者结尾之间的位置,`\b`匹配的是退格符
+- `\B`: 匹配非单词边界的位置
+
+`\b`用来匹配单词的开头和结束位置,就像作为行锚点的`$`和`^`一样都用来匹配位置,在匹配的过程中并不对应到任何字符.`/\bbat\b/`先是匹配单词的开头位置,然后匹配`b`、`a`、`t`,最后匹配单词的结束位置,或者直接点说可以是匹配`bat`这个单词, `b`本身并不是元字符,只有于`\`结合起来整个序列才有特殊意义,称其为"**元字符序列**", 重要的是它特殊的意义,因此元字符和元字符序列大多数时候是等价的.
+
+``` javascript
+var pattern = /\bbat\b/g,   //匹配bat单词,
+    text = "cat bat fat";
+
+var matches = pattern.exec(text);
+console.log(matches);       //[0:"bat" index:4  input:"cat bat fat" length:1]
 
 
+pattern = /\BScript/;
+text = "JavaScript";
+matches = pattern.exec(text);
+console.log(matches);       //[0:"Script" index:4  input:"JavaScript" length:1]
+```
 
+如果想要匹配单词`Java`,一种方法是匹配单词`Java`两边是否有空格
+
+```javascript
+var pattern = /\sJava\s/g,  //匹配Java单词
+    text = "Java Java JavaScript Java";
+
+var matches = pattern.exec(text);
+console.log(matches);       //[0:"Java" index:4  input:"Java Java JavaScript Java" length:1]
+
+
+matches = pattern.exec(text);
+console.log(matches);       //null
+```
+
+但是从例子可以看出并不能匹配行首和行尾的单词`Java`,因此可以使用`\b`代替空格符`\s`
+
+``` javascript
+var pattern = /\bJava\b/g,  //匹配Java单词
+    text = "Java Java JavaScript Java";
+
+var matches = pattern.exec(text);
+console.log(matches);  //[0:"Java" index:0  input:"Java Java JavaScript Java" length:1]
+
+matches = pattern.exec(text);
+console.log(matches);  //[0:"Java" index:5  input:"Java Java JavaScript Java" length:1]
+
+matches = pattern.exec(text);
+console.log(matches);  //[0:"Java" index:21  input:"Java Java JavaScript Java" length:1]
+```
+
+>注意: 单词分界符只是匹配位置,而不会去识别匹配的字符串是不是一个真正的英语单词,它只是按照规则去匹配一系列字符和数字符号的开始位置和结束位置.
