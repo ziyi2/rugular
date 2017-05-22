@@ -635,3 +635,44 @@ console.log(matches);  //[0:"Java" index:21  input:"Java Java JavaScript Java" l
 ```
 
 >注意: 单词分界符只是匹配位置,而不会去识别匹配的字符串是不是一个真正的英语单词,它只是按照规则去匹配一系列字符和数字符号的开始位置和结束位置.
+
+### 2.1.6 小结
+
+| 元字符     |     名称  |   匹配对象|
+| :-------- | :--------| :------ |
+| `.`|   点号 |  单个任意字符 |
+| `[...]`|  字符组 |  列出的任意字符 |
+| `[^...]`|  排除型字符组 |  未列出的任意字符 |
+| `^`|  脱字符 |  行的起始位置 |
+| `$`|  美元符 |  行的结束位置 |
+| `\b`|   | 单词的起始和结束位置  |
+| `\|`| 竖线  | 匹配分隔两边的任意一个表达式  |
+| `(...)`| 括号  | 匹配分隔两边的任意一个表达式,限制竖线的作用范围,其他功能下文讨论  |
+
+### 2.1.7 可选项元素
+
+ - `?`: 代表**可选项**,需要注意在字符组`[]`内部仍然代表普通字符.
+
+`/u?/`是必然能够匹配成功的,它可以匹配一个`u`,也可以什么都不匹配,这个是必然能够匹配成功的.
+
+``` javascript
+var pattern = /u?/g,    //匹配Java单词
+    text = "u a b";
+
+var matches = pattern.exec(text);
+console.log(matches);       //[0:"u" index:0  input:"u a b" length:1]
+
+matches = pattern.exec(text);
+console.log(matches);       //[1:" " index:1  input:"u a b" length:1]
+
+matches = pattern.exec(text);
+console.log(matches);       //[1:" " index:1  input:"u a b" length:1]
+
+matches = pattern.exec(text);
+console.log(matches);       //[1:" " index:1  input:"u a b" length:1]
+```
+
+因此`/(July|Jul)/`可以去掉括号使用`/July?/`表示. `/(July|Jul) (fourth|4th)/` 则可以使用`/July? four(th)?/`进行表示,需要注意的是其中的`(th)?`中的`?`现在作用的是整个括号了(把括号内的表达式看成一个整体).
+
+
+
