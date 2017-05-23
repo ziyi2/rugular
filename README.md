@@ -724,3 +724,124 @@ console.log(matches);       //[0:"<div width=14>"" index:0  input:"<div width=14
 | `?` |   0 |  1| 可以不出现,也可以只出现一次 |
 | `*` |   0 |  n| 可以不出现,也可以出现任意多次 |
 | `+` |   1 |  n| 不可以不出现,可以出现一次或任意多次 |
+
+### 2.1.9 区间量词:规定重现次数的范围
+
+- `{min,max}`: 允许重复出现的次数范围为`[min,max]`.
+
+`/^[a-zA-Z]{1,5}$/`用于匹配一个字符串,字符串可以由`1~5`个字母组成
+
+``` javascript
+var pattern = /^[a-zA-Z]{1,5}$/,    
+    text = "abcdefg",
+    text2 = "abcd";
+    
+
+var matches = pattern.exec(text);
+console.log(matches);       //null
+matches = pattern.exec(text2);
+console.log(matches);       //[0:"abcd" index:0  input:"abcd" length:1]
+```
+
+### 2.1.10 括号及反向引用
+
+- `()`: 之前所说的括号主要作用有两个,第一个是限制多选项`|`的范围,第二个是将若干字符组合为一个单元,受`?`或者`*`之类的量词的作用. 第三个作用就是**反向引用**. `()`可以把它包含的子表达式匹配的文本记忆起来,同时使用反向引用就可以匹配与表达式先前部分匹配的同样的本文.
+
+如果要匹配`/the the/`,可以使用`/(the) +\1/`进行代替,其中`\1`就是反向引用,它引用的是`()`中记忆的表达式
+
+``` javascript
+var pattern = /(the) +\1/,  
+    text = "the the apple";
+    
+
+var matches = pattern.exec(text);
+console.log(matches);       //[0:'the the' 1:'the' index:0 inpout:'the the apple' length:2]
+```
+
+如果要匹配重复的单词,更通用的方法当然是使用`/\b([a-zA-Z]+) +\1\b/`来匹配重复的单词
+
+``` javascript
+var pattern = /\b([a-zA-Z]+) +\1\b/g,   
+    text = "the the apple apple";
+    
+
+var matches = pattern.exec(text);
+console.log(matches);       //[0:'the the' 1:'the' index:0 inpout:'the the apple apple' length:2]
+
+matches = pattern.exec(text);
+console.log(matches);       //[0:'apple apple' 1:'apple' index:8 inpout:'the the apple apple' length:2]
+```
+
+如果有多个括号,当然可以使用`\2`甚至`\3`来引用第二组括号或者第三组括号匹配的文本. 
+
+### 2.1.11 转义字符
+- `\`:  如果要匹配元字符本身,就需要对元字符进行转义,使正则表达式可以把元字符当做普通字符看待,`\`就是用作对元字符进行转义使用的字符.
+
+例如要匹配`www.ziyi2.cn`,使用`/www.ziyi2.cn/`是可以匹配到该网址的,但是也可以匹配诸如`wwwaziyi2bcn`这种非网址的情况,因为其中的`.`在这里表示元字符,可以匹配任意的字符,所以为了匹配`.`本身,需要使用表达式`/www\.ziyi2\.cn/`,其中`\.`就是对`.`的转义,使其不表示元字符
+
+``` javascript
+var pattern = /www\.ziyi2\.cn/g,    
+    text = "www.ziyi2.cn";
+    text1 = "www.ziyi2 cn";
+    
+
+var matches = pattern.exec(text);
+console.log(matches);       //[0:'www.ziyi2.cn' index:0 inpout:'www.ziyi2.cn' length:1]
+
+matches = pattern.exec(text);
+console.log(matches);       //null
+```
+
+需要注意的是`JavaScript`语言支持在字符组内部的转义,某些语言或者工具会把字符组内部的`\`看成是普通字符处理
+
+``` javascript
+var pattern = /www[\.]ziyi2[\.]cn/g,    
+    text = "www.ziyi2.cn";
+
+var matches = pattern.exec(text);
+console.log(matches);       //[0:'www.ziyi2.cn' index:0 inpout:'www.ziyi2.cn' length:1]
+```
+
+
+### 2.1.12 元字符总结
+
+#### 2.1.12.1 匹配对象
+
+| 元字符     |     名称  |   匹配对象|
+| :-------- | :--------| :------ |
+|  |
+| `.`|   点号 |  **单个**任意字符 |
+| `[...]`|  字符组 |  **单个**列出的任意字符 |
+| `[^...]`|  排除型字符组 |  **单个**未列出的任意字符 |
+| `\char`|  转义字符 | 若`char`是元字符,匹配`char`对应的普通字符 |
+
+#### 2.1.12.2 提供计数功能的量词
+
+| 元字符     |     名称  |   匹配对象|
+| :-------- | :--------| :------ |
+| `?` |  问号 | 可以不出现,也可以只出现一次 |
+| `*` |  星号 |   可以不出现,也可以出现任意多次 |
+| `+` |  加号 |  不可以不出现,可以出现一次或任意多次 |
+| `{min,max}` |  区间量词 |  至少出现`min`次,至多出现`max`次 |
+
+#### 2.1.12.3 匹配位置
+| 元字符     |     名称  |   匹配对象|
+| :-------- | :--------| :------ |
+| `^`|  脱字符 |  行的起始位置 |
+| `$`|  美元符 |  行的结束位置 |
+| `\b`|   | 单词的起始和结束位置  |
+
+#### 2.1.12.4 其他元字符
+
+| 元字符     |     名称  |   匹配对象|
+| :-------- | :--------| :------ |
+| `()`|  括号 |  限定多选结构的范围,标注量词作用的范围,为**反向引用**捕获文本 |
+| `\1,\2,...\n`|  反向引用 |  捕获之前的第一个括号,第二个括号乃至第n个括号的文本 |
+
+>注意
+
+- 使用括号的3个理由: 限制多选结构,分组和捕获文本.
+- 多选结构和字符组功能完全不同,在有限的情况下表现相同.
+- 排除型字符组仍然需要匹配一个字符.
+- 转义字符的情况: `\`加上元字符表示匹配元字符对应的普通字符,`\`加上非元字符组成一种由具体实现方式规定其意义的元字符序列(例如`\b`),`\`加上任意其他字符默认情况就是匹配此字符.
+- 字符组的特殊性在它的规定是完全独立于正则表达式语言"主体"的.
