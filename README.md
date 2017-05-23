@@ -663,16 +663,64 @@ var matches = pattern.exec(text);
 console.log(matches);       //[0:"u" index:0  input:"u a b" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);       //[1:" " index:1  input:"u a b" length:1]
+console.log(matches);       //[0:" " index:1  input:"u a b" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);       //[1:" " index:1  input:"u a b" length:1]
+console.log(matches);       //[0:" " index:1  input:"u a b" length:1]
 
 matches = pattern.exec(text);
-console.log(matches);       //[1:" " index:1  input:"u a b" length:1]
+console.log(matches);       //[0:" " index:1  input:"u a b" length:1]
 ```
 
 因此`/(July|Jul)/`可以去掉括号使用`/July?/`表示. `/(July|Jul) (fourth|4th)/` 则可以使用`/July? four(th)?/`进行表示,需要注意的是其中的`(th)?`中的`?`现在作用的是整个括号了(把括号内的表达式看成一个整体).
 
+### 2.1.8 量词:重复出现
+- `+`: 之前紧邻的元素出现一次或多次. `[...+]`匹配尽可能多的次数,如果一次匹配都无法完成则报告失败.
+- `*`: 之前紧邻的元素出现任意多次或者不出现. `[...*]`表示匹配尽可能多的次数,如果实在无法匹配也不要紧.
 
+>注意: `?*+`这3个元字符统称为**量词**. 因为它们限定了所作用元素的重复出现次数. `[...?]`和`[...*]`永远都不会匹配失败.`/ ?/`和`/ */`的区别是前者能够匹配一个可能出现的空格,后者能够匹配任意多个空格.
 
+例如匹配**HTML**中的`<H[1-6]>`标签, 按照**HTML**规范可以在标签结尾`>`字符之前添加多个空格或者没有空格,那么应该使用`*`而不是`?`
+
+``` javascript
+var pattern = /<H[1-6] *>/, 
+    text = "<H1>",
+    text2 = "<H1  >";
+
+var matches = pattern.exec(text);
+console.log(matches);       //[0:"<H1>" index:0  input:"<H1>" length:1]
+
+matches = pattern.exec(text2);
+console.log(matches);       //[0:"<H1  >"" index:0  input:"<H1  >" length:1]
+```
+
+例如需要匹配`<div width=14>`这个`div`标签时, 允许`>`之前有任意多个空格或没有空格,而`div`和`width`之间至少有一次空格,而`=`两边则也可以由任意多个空格或者没有空格,则可以使用表达式`/<div +width *= *14 *>/`,其中`/ +/`表示至少要匹配一次空格
+
+``` javascript
+var pattern = /<div +width *= *14 *>/,  
+    text = "<div width   = 14         >",
+    text2 = "<divwidth= 14>";
+    text3 = "<div width=14>";
+
+var matches = pattern.exec(text);
+console.log(matches);       //[0:"<div width   = 14         >" index:0  input:"<div width   = 14         >" length:1]
+
+matches = pattern.exec(text2);
+console.log(matches);       //null
+
+matches = pattern.exec(text3);
+console.log(matches);       //[0:"<div width=14>"" index:0  input:"<div width=14>" length:1]
+```
+
+`/<div +width *= *14 *>/`如果还需要匹配范围更通用,可以改成`/<div +width *= *[0-9]+ *>/`,其中`[0-9]+`表示至少匹配数字一次,当然`00`也是会被匹配的,需要注意的是一个字符组就是一个"元素",可以对它直接使用`+*`而不需要括号. 在以上例子中`*`和`+`的作用对象都是空格,因此要习惯把空格当做普通字符.
+
+>提问: 如果`width`属性是可选的, 也可以只匹配`<div>`该如何实现呢?
+>解答: 可选项当然要用`?`元字符,因此应该是`/<div( +width *= *[0-9]+)? *>/`,这里需要注意把`/ +/`包含在可选项的范围内,不然`<div>`就不匹配了,因为有了`/ +/`至少需要匹配一个空格了.而结尾的`/ */`则不应该包含在可选项之内,因为需要匹配`<div  >`这样的情况.
+
+问号`?`星号`*`和加号`+`的重要区别
+
+| 元字符类型|     次数下限|   次数上限| 次数上限|
+| :-------- | :--------| :------ |:------ |
+| `?` |   0 |  1| 可以不出现,也可以只出现一次 |
+| `*` |   0 |  n| 可以不出现,也可以出现任意多次 |
+| `+` |   1 |  n| 不可以不出现,可以出现一次或任意多次 |
