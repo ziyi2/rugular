@@ -919,12 +919,14 @@ var matches = pattern.exec(num);
 console.log(matches);       //[0:'123m' 1:'123' 2:'m' index:0 inpout:'123m' length:3]
 
 console.log(RegExp.$1);     //123 第一个括号所匹配的子文本
-console.log(RegExp.$2);     //m   第二个括号所匹配的自文本
+console.log(RegExp.$2);     //m   第二个括号所匹配的子文本
 
 matches = pattern.exec(num2);
 console.log(matches);       //[0:'123m' 1:'123' 2:'s' index:0 inpout:'123m' length:3]
 
 console.log(RegExp.$1);     //123 第一个括号所匹配的子文本
-console.log(RegExp.$2);     //s   第二个括号所匹配的自文本
+console.log(RegExp.$2);     //s   第二个括号所匹配的子文本
 ```
 
+
+>注意: 需要注意的是`()`并不是可以在随意位置添加的,如果`()`改变了`*`或者`|`或者其他量词的作用对象,那么很有可能表达式和未加括号的表达式不能够匹配相同的文本.
