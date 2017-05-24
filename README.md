@@ -845,3 +845,86 @@ console.log(matches);       //[0:'www.ziyi2.cn' index:0 inpout:'www.ziyi2.cn' le
 - 排除型字符组仍然需要匹配一个字符.
 - 转义字符的情况: `\`加上元字符表示匹配元字符对应的普通字符,`\`加上非元字符组成一种由具体实现方式规定其意义的元字符序列(例如`\b`),`\`加上任意其他字符默认情况就是匹配此字符.
 - 字符组的特殊性在它的规定是完全独立于正则表达式语言"主体"的.
+
+## 3.入门示例拓展
+
+### 3.1 使用正则表达式匹配文本
+
+#### 3.1.1 简单实用的程序
+
+>提问: 如何匹配一个数,这个数既可以是负数也可以是正数,可以是整数也可以是浮点数?
+
+如果要匹配正负数,首先需要匹配符号,可以使用`/-?/`或者`/[-+]?/`来匹配可能出现的符号,`?`表示可以出现一次或者不出现. 接下来是匹配整数或者浮点数,如果要匹配整数那么可以使用`/[0-9]+/`来表示整数部分,需要注意的是也可以匹配`00009`这样的数,接下来如果有小数部分,则可以使用`/\.[0-9]+/`来表示小数部分,需要注意的是一旦有了`.`那么后面必须要跟数字,所以这里使用`+`(至少匹配一次)而不是`*`(可以不匹配),把它合起来就是`/[-+]?[0-9]+\.[0-9]+/`,但是需要注意的是这种情况无法匹配整数,因此可以给小数点以及之后的部分加上`?`,让小数点以及之后的数字可以出现一次或者不出现,因此最终的匹配表达式是`/[-+]?[0-9]+(\.[0-9]+)?/`
+
+``` javascript
+var pattern = /^[-+]?[0-9]+(\.[0-9]+)?$/,   
+    num = 123,
+    num2 = -123;
+    num3 = 123.0009
+    num4 = "123.009.09",
+    num5 = "-000123.000",
+    num6 = "123.";
+    num7 = ".123";
+
+
+var matches = pattern.exec(num);
+console.log(matches);       //[0:'123' 1:undefined index:0 inpout:'123' length:2]
+
+matches = pattern.exec(num2);
+console.log(matches);       //[0:'-123' 1:undefined index:0 inpout:'-123' length:2]
+
+matches = pattern.exec(num3);
+console.log(matches);       //[0:'123.0009' 1:'.0009' index:0 inpout:'123.0009' length:2]
+
+matches = pattern.exec(num4);
+console.log(matches);       //null
+
+matches = pattern.exec(num5);
+console.log(matches);       //[0:'-000123.000' 1:'.000' index:0 inpout:'-000123.000' length:2]
+
+matches = pattern.exec(num6);
+console.log(matches);       //null
+
+matches = pattern.exec(num7);
+console.log(matches);       //null
+```
+
+#### 3.1.2 成功匹配的副作用
+
+在之前所有的`JavaScript`例子中,我们可以看到使用`pattern.exec()`函数匹配时返回的数组中第一项是与整个模式匹配的字符串,其他项是与模式中的捕获组匹配的字符串(如果没有捕获组,数组只包含一项),捕获组就是匹配的副作用. 反向引用使用`\1 \2 ... \n`来指代正则表达式之前的括号内的子表达式, 和此类似的是在`JavaScript`语言中支持捕获组的概念,一旦文本匹配成功后,匹配文本所对应的正则表达式如果有`()`包裹的子表达式,那么子表达式所匹配的文本内容就能被捕获.在`JavaScript`中使用`RegExp.$1`、`RegExp.$2`...表示匹配`()`内子表达式的文本.
+
+例如`/^[0-9]+[ms]$/`表示匹配单位是`m`或者`s`的数
+
+``` javascript
+var pattern = /^[0-9]+[ms]$/,   
+    num = '123m',
+    num2 = '123s';
+
+
+var matches = pattern.exec(num);
+console.log(matches);       //[0:'123m' index:0 inpout:'123m' length:1]
+
+matches = pattern.exec(num2);
+console.log(matches);       //[0:'123s'  index:0 inpout:'123s' length:1]
+```
+但是`/^([0-9]+)([ms])$/`也可以匹配同样的文本,但是它还可以捕获额外的子文本,同时返回的数组长度不在是`1`,还包含了捕获组的文本
+
+``` javascript
+var pattern = /^([0-9]+)([ms])$/,   
+    num = '123m',
+    num2 = '123s';
+
+
+var matches = pattern.exec(num);
+console.log(matches);       //[0:'123m' 1:'123' 2:'m' index:0 inpout:'123m' length:3]
+
+console.log(RegExp.$1);     //123 第一个括号所匹配的子文本
+console.log(RegExp.$2);     //m   第二个括号所匹配的自文本
+
+matches = pattern.exec(num2);
+console.log(matches);       //[0:'123m' 1:'123' 2:'s' index:0 inpout:'123m' length:3]
+
+console.log(RegExp.$1);     //123 第一个括号所匹配的子文本
+console.log(RegExp.$2);     //s   第二个括号所匹配的自文本
+```
+
