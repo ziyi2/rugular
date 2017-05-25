@@ -755,7 +755,7 @@ var pattern = /(the) +\1/,
     
 
 var matches = pattern.exec(text);
-console.log(matches);       //[0:'the the' 1:'the' index:0 inpout:'the the apple' length:2]
+console.log(matches);       //[0:'the the' 1:'the' index:0 input:'the the apple' length:2]
 ```
 
 如果要匹配重复的单词,更通用的方法当然是使用`/\b([a-zA-Z]+) +\1\b/`来匹配重复的单词
@@ -766,10 +766,10 @@ var pattern = /\b([a-zA-Z]+) +\1\b/g,
     
 
 var matches = pattern.exec(text);
-console.log(matches);       //[0:'the the' 1:'the' index:0 inpout:'the the apple apple' length:2]
+console.log(matches);       //[0:'the the' 1:'the' index:0 input:'the the apple apple' length:2]
 
 matches = pattern.exec(text);
-console.log(matches);       //[0:'apple apple' 1:'apple' index:8 inpout:'the the apple apple' length:2]
+console.log(matches);       //[0:'apple apple' 1:'apple' index:8 input:'the the apple apple' length:2]
 ```
 
 如果有多个括号,当然可以使用`\2`甚至`\3`来引用第二组括号或者第三组括号匹配的文本. 
@@ -786,7 +786,7 @@ var pattern = /www\.ziyi2\.cn/g,
     
 
 var matches = pattern.exec(text);
-console.log(matches);       //[0:'www.ziyi2.cn' index:0 inpout:'www.ziyi2.cn' length:1]
+console.log(matches);       //[0:'www.ziyi2.cn' index:0 input:'www.ziyi2.cn' length:1]
 
 matches = pattern.exec(text);
 console.log(matches);       //null
@@ -799,7 +799,7 @@ var pattern = /www[\.]ziyi2[\.]cn/g,
     text = "www.ziyi2.cn";
 
 var matches = pattern.exec(text);
-console.log(matches);       //[0:'www.ziyi2.cn' index:0 inpout:'www.ziyi2.cn' length:1]
+console.log(matches);       //[0:'www.ziyi2.cn' index:0 input:'www.ziyi2.cn' length:1]
 ```
 
 
@@ -868,19 +868,19 @@ var pattern = /^[-+]?[0-9]+(\.[0-9]+)?$/,
 
 
 var matches = pattern.exec(num);
-console.log(matches);       //[0:'123' 1:undefined index:0 inpout:'123' length:2]
+console.log(matches);       //[0:'123' 1:undefined index:0 input:'123' length:2]
 
 matches = pattern.exec(num2);
-console.log(matches);       //[0:'-123' 1:undefined index:0 inpout:'-123' length:2]
+console.log(matches);       //[0:'-123' 1:undefined index:0 input:'-123' length:2]
 
 matches = pattern.exec(num3);
-console.log(matches);       //[0:'123.0009' 1:'.0009' index:0 inpout:'123.0009' length:2]
+console.log(matches);       //[0:'123.0009' 1:'.0009' index:0 input:'123.0009' length:2]
 
 matches = pattern.exec(num4);
 console.log(matches);       //null
 
 matches = pattern.exec(num5);
-console.log(matches);       //[0:'-000123.000' 1:'.000' index:0 inpout:'-000123.000' length:2]
+console.log(matches);       //[0:'-000123.000' 1:'.000' index:0 input:'-000123.000' length:2]
 
 matches = pattern.exec(num6);
 console.log(matches);       //null
@@ -900,12 +900,11 @@ var pattern = /^[0-9]+[ms]$/,
     num = '123m',
     num2 = '123s';
 
-
 var matches = pattern.exec(num);
-console.log(matches);       //[0:'123m' index:0 inpout:'123m' length:1]
+console.log(matches);       //[0:'123m' index:0 input:'123m' length:1]
 
 matches = pattern.exec(num2);
-console.log(matches);       //[0:'123s'  index:0 inpout:'123s' length:1]
+console.log(matches);       //[0:'123s'  index:0 input:'123s' length:1]
 ```
 但是`/^([0-9]+)([ms])$/`也可以匹配同样的文本,但是它还可以捕获额外的子文本,同时返回的数组长度不在是`1`,还包含了捕获组的文本
 
@@ -916,17 +915,59 @@ var pattern = /^([0-9]+)([ms])$/,
 
 
 var matches = pattern.exec(num);
-console.log(matches);       //[0:'123m' 1:'123' 2:'m' index:0 inpout:'123m' length:3]
+console.log(matches);       //[0:'123m' 1:'123' 2:'m' index:0 input:'123m' length:3]
 
 console.log(RegExp.$1);     //123 第一个括号所匹配的子文本
-console.log(RegExp.$2);     //m   第二个括号所匹配的子文本
+console.log(RegExp.$2);     //m   第二个括号所匹配的自文本
 
 matches = pattern.exec(num2);
-console.log(matches);       //[0:'123m' 1:'123' 2:'s' index:0 inpout:'123m' length:3]
+console.log(matches);       //[0:'123m' 1:'123' 2:'s' index:0 input:'123m' length:3]
 
 console.log(RegExp.$1);     //123 第一个括号所匹配的子文本
-console.log(RegExp.$2);     //s   第二个括号所匹配的子文本
+console.log(RegExp.$2);     //s   第二个括号所匹配的自文本
 ```
 
-
 >注意: 需要注意的是`()`并不是可以在随意位置添加的,如果`()`改变了`*`或者`|`或者其他量词的作用对象,那么很有可能表达式和未加括号的表达式不能够匹配相同的文本.
+
+#### 3.1.3 错综复杂的正则表达式
+
+我们可以使用表达式`/^[-+]?[0-9]+(\.[0-9]+)?([ms])$/`匹配可以带有小数以及负数的单位为`m`或者`s`的数,如果我们还想捕获整个数字部分,可以使用`()`将非单位部分包裹起来,如`/^([-+]?[0-9]+(\.[0-9]+)?)([ms])$/`,此时`RegExp.$1`表示第一个括号的捕获文本,需要注意的是`RegExp.$2`表示`(\.[0-9]+)?)`匹配的小数部分,而`RegExp.$3`是`([ms])`捕获的文本.
+
+如果要在单位和数字之间匹配空格,则可以使用表达式`/^([-+]?[0-9]+(\.[0-9]+)?) *([ms])$/`其中 ` *`是匹配任意数目的空格或者不匹配,但是需要注意的是**空白字符**不仅仅是空格字符,还包括`\t`制表符`\n`换行符以及`\b`退格符(通常情况下表示单词分界符,但是在字符组`[]`内则匹配退格符).
+
+需要注意的是使用`()`时可能会带来副作用,`()`的功能不仅仅包含**捕获**,还包含**分组**的概念,使用`()`可以是量词的作用范围. 但是如果我们某些时候仅仅只需要**分组**的作用,而不需要**捕获**的作用,例如上例中的`(\.[0-9]+)?)`,那么我们可以使用非捕获型括号`(?:)`,所以整个表达式是`/^([-+]?[0-9]+(?:\.[0-9]+)?) *([ms])$/`,此时`(?:\.[0-9]+)`只有**分组**的作用,而没有**捕获**的作用
+
+``` javascript
+var pattern = /^([-+]?[0-9]+(\.[0-9]+)?) *([ms])$/, 
+    num = '123.99 m';
+
+
+var matches = pattern.exec(num);
+console.log(matches);       //[0:'123.99m' 1:'123.99' 2:'.99' 3:'m'  index:0 input:'123.99 m' length:4]
+
+console.log(RegExp.$1);     //123.99 第一个括号所匹配的子文本
+console.log(RegExp.$2);     //.99    第二个括号所匹配的自文本
+console.log(RegExp.$3);     //m      第三个括号所匹配的自文本
+
+
+pattern = /^([-+]?[0-9]+(?:\.[0-9]+)?) *([ms])$/,   
+num = '123.99 m';
+
+
+matches = pattern.exec(num);
+console.log(matches);       //[0:'123.99m' 1:'123.99' 2:'m'  index:0 input:'123.99 m' length:3]
+
+console.log(RegExp.$1);     //123.99 第一个括号所匹配的子文本
+console.log(RegExp.$2);     //m      第三个括号所匹配的自文本
+console.log(RegExp.$3);     // 
+```
+>注意: 避免不必要的捕获操作可以提高匹配效率. 需要注意的是`(?:)`的`?`并不是可选项的意思,而该正则表达式中的其他`?`则表示元字符量词.
+>
+##### 3.1.3.1 匹配特殊字符
+
+- `\s`: 表示所有的空白字符,包括空格符 ` `,制表符`\t`,换行符`\n`以及回车符`\r`.
+- `\S`: 除`\s`之外的任何字符
+- `\w`: `[a-zA-Z0-9]`,可以使用`\w+`匹配单词
+- `\W`: `[^a-zA-Z0-9]`
+-  `\d`: `[0-9]`
+-  `\D`: `[^0-9]`
